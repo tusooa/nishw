@@ -1,0 +1,32 @@
+.nw-login-container
+{
+  text-align: center;
+  margin-top: 10%;
+}
+
+.nw-login-form
+{
+  display: inline-block;
+  margin: auto;
+  text-align: center;
+}
+
+.nw-login-row
+{
+  display: inline-block;
+  width: 100%;
+}
+
+.nw-login-prompt
+{
+  float: left;
+  text-align: right;
+  min-width: 30%;
+}
+
+.nw-login-container input
+{
+  float: right;
+  text-align: left;
+  max-width: 68%;
+}

@@ -1,48 +1,69 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React from 'react'
+import './App.css'
 import config from './config.json'
+
+import Login from './components/login'
+import MainPage from './components/mainpage'
+import sdk from 'matrix-js-sdk'
 
 class App extends React.Component
 {
   constructor(props)
   {
-    super(props);
+    super(props)
 
     this.state = {
-      username: '',
-      homeserver: config.defaultHomeServer,
-      password: '',
+      userId: '',
+      homeserver: '',
       loggedIn: false,
-      message: '',
-    };
-
-    this.handleChange = this.handleChange.bind(this);
-    this.logIn = this.logIn.bind(this);
-    this.logOut = this.logOut.bind(this);
-  }
-  
-  handleChange(event)
-  {
-    event.preventDefault();
-
-    this.setState({ [event.target.name]: event.target.value });
-  }
-
-  logIn()
-  {
-    const { username, password } = this.state;
-
-    if (username === 'user' && password === 'pass') {
-      this.setState({loggedIn: true, message: 'Log-in successful.'});
-    } else {
-      this.setState({message: "Password is wrong"});
+      accessToken: '',
     }
+
+    this.matrix = null
+    
+    this.logIn = this.logIn.bind(this)
+    this.logOut = this.logOut.bind(this)
+  }
+
+  /**
+   * logIn({ username, password, homeserver })
+   */
+  logIn(authInfo)
+  {
+    const { username, password, homeserver } = authInfo;
+
+    this.matrix = sdk.createClient(homeserver)
+
+    this.matrix.login('m.login.password',
+                      {
+                        identifier: {
+                          type: 'm.id.user',
+                          user: username,
+                        },
+                        password,
+                      })
+      .then((res) => {
+        console.log(res)
+
+        this.matrix.startClient()
+
+        this.setState({
+          loggedIn: true,
+          accessToken: res.access_token,
+          homeserver: res.home_server,
+          userId: res.user_id,
+        })
+      }, (err) => {
+        this.setState({
+          message: `${err.errcode}: ${err.message}`
+        })
+        console.log(err)
+      })
   }
 
   logOut()
   {
-    this.setState({loggedIn: false, message: ''});
+    this.setState({loggedIn: false, message: ''})
   }
   
   render()
@@ -52,21 +73,15 @@ class App extends React.Component
         {
           (!this.state.loggedIn) ? (
             <div>
-              <p>Username: <input type="text" name="username"
-                                  onChange={this.handleChange} value={this.state.username} />
-                @ <input type="text" name="homeserver"
-                         onChange={this.handleChange} value={this.state.homeserver} /></p>
-              <p>Password: <input type="password" name="password"
-                                  onChange={this.handleChange} value={this.state.password} /></p>
-              <button onClick={this.logIn}>Log in</button>
+              <Login loginCallback={this.logIn} config={config}/ >
+              <div id="nw-main-messagebox">
+                { this.state.message }
+              </div>
             </div>
           ) : (
-            <div>
-              <button onClick={this.logOut}>Log out</button>
-            </div>
+            <MainPage matrix={this.matrix} />
           )
         }
-        <p>{this.state.message}</p>
       </div>
     );
   }
