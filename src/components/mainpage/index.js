@@ -17,6 +17,7 @@
 import React from 'react'
 
 import RoomList from '../roomlist'
+import MessageBox from '../messagebox'
 import './styles.css'
 
 class MainPage extends React.Component
@@ -88,12 +89,7 @@ class MainPage extends React.Component
                       switchRoomCallback={ this.switchRoom } />
           </div>
           <div className='right'>
-            <ul>
-              { this.state.timeline.map(msg => (
-                <li key={ msg.getId() }>{msg.getSender()}: { msg.event.content.body }</li>
-              ))
-              }
-            </ul>
+            <MessageBox room={ this.state.currentRoom }/>
           </div>
         </div>
         <div className='footer'>

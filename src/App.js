@@ -45,7 +45,7 @@ class App extends React.Component
         userId: this.state.userId
       })
 
-      this.matrix.startClient({initialSyncLimit: 1})
+      this.matrix.startClient({initialSyncLimit: 10})
     }
     
     this.logIn = this.logIn.bind(this)
