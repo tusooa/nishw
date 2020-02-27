@@ -1,0 +1,19 @@
+.left
+{
+  float: left;
+  width: 20%;
+  border-right: 1px solid;
+  margin-top: 0;
+  display: block;
+}
+
+.right
+{
+  margin-left: 22%;
+  display: block;
+}
+
+.left, .right
+{
+  text-align: left;
+}

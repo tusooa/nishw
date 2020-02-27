@@ -16,6 +16,9 @@
  */
 import React from 'react'
 
+import RoomList from '../roomlist'
+import './styles.css'
+
 class MainPage extends React.Component
 {
   /**
@@ -27,7 +30,10 @@ class MainPage extends React.Component
 
     console.log(props)
     this.state = {
+      rooms: [],
       timeline: [],
+      currentRoom: null,
+      message: '',
     }
 
     this.matrix = props.matrix
@@ -43,22 +49,56 @@ class MainPage extends React.Component
                      console.log(event)
                      console.log(event.event.content.body)
                    })
+    this.matrix.on('sync', (state) => {
+      switch (state) {
+      case 'ERROR':
+        this.setState({ message: 'Connection to the server has been lost.' })
+        break
+      case "SYNCING":
+        this.setState({ message: '' })
+        break
+      case "PREPARED":
+        this.setState({ message: '', rooms: this.matrix.getRooms() })
+        break
+      }
+    })
+
+    this.switchRoom = this.switchRoom.bind(this)
+
   }
 
   componentDidMount()
   {
   }
 
+  // @param room: Room
+  switchRoom(room)
+  {
+    this.setState({ currentRoom: room })
+  }
+  
   render()
   {
     return (
       <div>
-        <ul>
-          { this.state.timeline.map(msg => (
-            <li key={ msg.getId() }>{msg.getSender()}: { msg.event.content.body }</li>
-          ))
-          }
-        </ul>
+        <div>
+          <div className='left'>
+            <RoomList rooms={ this.state.rooms }
+                      current={ this.state.currentRoom }
+                      switchRoomCallback={ this.switchRoom } />
+          </div>
+          <div className='right'>
+            <ul>
+              { this.state.timeline.map(msg => (
+                <li key={ msg.getId() }>{msg.getSender()}: { msg.event.content.body }</li>
+              ))
+              }
+            </ul>
+          </div>
+        </div>
+        <div className='footer'>
+          { this.state.message }
+        </div>
       </div>)
   }
 }

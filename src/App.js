@@ -21,6 +21,7 @@ import config from './config.json'
 import Login from './components/login'
 import MainPage from './components/mainpage'
 import sdk from 'matrix-js-sdk'
+import { withCookies } from 'react-cookie'
 
 class App extends React.Component
 {
@@ -29,13 +30,23 @@ class App extends React.Component
     super(props)
 
     this.state = {
-      userId: '',
-      homeserver: '',
-      loggedIn: false,
-      accessToken: '',
+      userId: props.cookies.get('userId') || '',
+      homeserver: props.cookies.get('homeserver') || config.homeserver,
+      accessToken: props.cookies.get('accessToken') || '',
     }
+    this.state.loggedIn = !!this.state.accessToken
 
-    this.matrix = null
+    if (! this.state.loggedIn) {
+      this.matrix = null
+    } else {
+      this.matrix = sdk.createClient({
+        baseUrl: this.state.homeserver,
+        accessToken: this.state.accessToken,
+        userId: this.state.userId
+      })
+
+      this.matrix.startClient({initialSyncLimit: 1})
+    }
     
     this.logIn = this.logIn.bind(this)
     this.logOut = this.logOut.bind(this)
@@ -66,9 +77,12 @@ class App extends React.Component
         this.setState({
           loggedIn: true,
           accessToken: res.access_token,
-          homeserver: res.home_server,
           userId: res.user_id,
         })
+
+        this.props.cookies.set('accessToken', res.access_token)
+        this.props.cookies.set('homeserver', homeserver)
+        this.props.cookies.set('userId', res.user_id)
       }, (err) => {
         this.setState({
           message: `${err.errcode}: ${err.message}`
@@ -99,8 +113,8 @@ class App extends React.Component
           )
         }
       </div>
-    );
+    )
   }
 }
 
-export default App;
+export default withCookies(App)
