@@ -15,31 +15,100 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 import React from 'react'
+import './styles.scss'
 
 const debug = console.log
 
 class MessageBox extends React.Component
 {
-  /// @param: props: { room: Room }
+  /// @param: props: { room: Room, matrix: MatrixClient }
   constructor(props)
   {
     super(props)
+
+    this.state = {
+      messageToSend: '',
+    }
+    
+    this.onChange = this.onChange.bind(this)
+    this.sendOnEnter = this.sendOnEnter.bind(this)
+    this.sendMessage = this.sendMessage.bind(this)
+  }
+
+  onChange(e)
+  {
+    e.preventDefault()
+
+    this.setState({ [e.target.name]: e.target.value })
+  }
+
+  sendOnEnter(e)
+  {
+    if (e.key === 'Enter') {
+      e.preventDefault()
+      this.sendMessage()
+    }
+  }
+
+  sendMessage()
+  {
+    const { matrix, room } = this.props
+
+    const content = {
+      body: this.state.messageToSend,
+      msgtype: 'm.text',
+    }
+
+    matrix.sendEvent(room.roomId,
+                     'm.room.message',
+                     content)
+    this.setState({ messageToSend: '' })
   }
 
   render()
   {
-    if (!this.props.room) { return [] }
+    const { matrix, room } = this.props
+    
+    if (!room) { return [] }
     
     return (
-      <div>
-        <div>{ this.props.room.name }</div>
-        <ul>
-          { this.props.room.timeline.map(msg => {
+      <div className='messagebox'>
+        <div>{ room.name }</div>
+        <div className='messagebox__timeline'>
+          { room.timeline.map(msg => {
             debug(msg)
-            return <li key={ msg.getId() }>{msg.getSender()}: { msg.event.content.body }</li>
+            const sender = msg.getSender()
+            const isMe = sender === matrix.getUserId()
+            
+            return <div className='messagebox__message'
+                       key={ msg.getId() }>
+                     <div className='messagebox__sender'>
+                       <span className=
+                               { 'messagebox__sender_name'
+                                 + (isMe
+                                    ? ' messagebox__sender_name_me'
+                                    : '')}>
+                         { sender }
+                       </span>:
+                     </div>
+                     <div className='messagebox__content'>
+                       { msg.event.content.body }
+                     </div>
+                     <div className='messagebox__status'>
+                       { msg.isSending() ? '[sending]' : '' }
+                     </div>
+                   </div>
           })
           }
-        </ul>
+        </div>
+        <div>
+          <input type='text'
+                 name='messageToSend'
+                 onChange={ this.onChange }
+                 onKeyUp={ this.sendOnEnter }
+                 value={ this.state.messageToSend } />
+          <button onClick={ this.sendMessage }>Send</button>
+        </div>
       </div>);
   }
 }

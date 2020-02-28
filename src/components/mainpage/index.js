@@ -92,7 +92,8 @@ class MainPage extends React.Component
                       switchRoomCallback={ this.switchRoom } />
           </div>
           <div className='right'>
-            <MessageBox room={ this.state.currentRoom }/>
+            <MessageBox room={ this.state.currentRoom }
+                        matrix={ this.matrix }/>
           </div>
         </div>
         <div className='footer'>
