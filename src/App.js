@@ -20,8 +20,9 @@ import config from './config.json'
 
 import Login from './components/login'
 import MainPage from './components/mainpage'
-import sdk from 'matrix-js-sdk'
 import { withCookies } from 'react-cookie'
+global.Olm = require('olm/olm_legacy') // FIXME
+const sdk = require('matrix-js-sdk')
 
 class App extends React.Component
 {
@@ -33,25 +34,39 @@ class App extends React.Component
       userId: props.cookies.get('userId') || '',
       homeserver: props.cookies.get('homeserver') || config.homeserver,
       accessToken: props.cookies.get('accessToken') || '',
+      deviceId: props.cookies.get('deviceId') || '',
     }
     this.state.loggedIn = !!this.state.accessToken
 
     if (! this.state.loggedIn) {
       this.matrix = null
     } else {
-      this.matrix = sdk.createClient({
-        baseUrl: this.state.homeserver,
-        accessToken: this.state.accessToken,
-        userId: this.state.userId
-      })
-
-      this.matrix.startClient({initialSyncLimit: 10})
+      this.initMatrix()
+      this.startMatrix()
     }
     
     this.logIn = this.logIn.bind(this)
     this.logOut = this.logOut.bind(this)
   }
 
+  initMatrix()
+  {
+    this.matrix = sdk.createClient({
+      baseUrl: this.state.homeserver,
+      accessToken: this.state.accessToken,
+      userId: this.state.userId,
+      deviceId: this.state.deviceId,
+      sessionStore: new sdk.WebStorageSessionStore(window.localStorage),
+    })
+
+    this.matrix.initCrypto()
+  }
+
+  async startMatrix()
+  {
+    await this.matrix.startClient({initialSyncLimit: 10})
+  }
+  
   /**
    * logIn({ username, password, homeserver })
    */
@@ -59,30 +74,36 @@ class App extends React.Component
   {
     const { username, password, homeserver } = authInfo;
 
-    this.matrix = sdk.createClient(homeserver)
+    const matrix = sdk.createClient({
+      baseUrl: homeserver,
+      sessionStore: new sdk.WebStorageSessionStore(window.localStorage),
+    })
 
-    this.matrix.login('m.login.password',
+    matrix.login('m.login.password',
                       {
                         identifier: {
                           type: 'm.id.user',
                           user: username,
                         },
                         password,
+                        initial_device_display_name: 'nishw',
                       })
       .then((res) => {
-        console.log(res)
-
-        this.matrix.startClient()
-
-        this.setState({
-          loggedIn: true,
-          accessToken: res.access_token,
-          userId: res.user_id,
-        })
-
         this.props.cookies.set('accessToken', res.access_token)
         this.props.cookies.set('homeserver', homeserver)
         this.props.cookies.set('userId', res.user_id)
+        this.props.cookies.set('deviceId', res.device_id)
+
+        this.setState({
+          homeserver,
+          accessToken: res.access_token,
+          userId: res.user_id,
+          deviceId: res.device_id,
+        }, () => {
+          this.initMatrix()
+          this.setState({ loggedIn: true })
+          this.startMatrix()
+        })
       }, (err) => {
         this.setState({
           message: `${err.errcode}: ${err.message}`
@@ -93,7 +114,19 @@ class App extends React.Component
 
   logOut()
   {
-    this.setState({loggedIn: false, message: ''})
+    this.setState({
+      loggedIn: false,
+      message: '',
+      userId: '',
+      homeserver: '',
+      accessToken: '',
+      deviceId: '',
+    })
+
+    ;['userId', 'homeserver', 'accessToken', 'deviceId']
+      .map( n => this.props.cookies.remove(n))
+
+    this.matrix = null
   }
   
   render()
@@ -109,7 +142,7 @@ class App extends React.Component
               </div>
             </div>
           ) : (
-            <MainPage matrix={this.matrix} />
+            <MainPage matrix={this.matrix} logoutCallback={this.logOut} />
           )
         }
       </div>

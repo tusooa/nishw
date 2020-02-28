@@ -23,7 +23,7 @@ import './styles.css'
 class MainPage extends React.Component
 {
   /**
-   * <MainPage matrix=... />
+   * <MainPage matrix=... logoutCallback=func />
    */
   constructor(props)
   {
@@ -82,7 +82,10 @@ class MainPage extends React.Component
   {
     return (
       <div>
-        <div>
+        <div className='header'>
+          <button onClick={ this.props.logoutCallback }>Log out</button>
+        </div>
+        <div className='mainpage__content'>
           <div className='left'>
             <RoomList rooms={ this.state.rooms }
                       current={ this.state.currentRoom }

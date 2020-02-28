@@ -16,6 +16,8 @@
  */
 import React from 'react'
 
+const debug = console.log
+
 class MessageBox extends React.Component
 {
   /// @param: props: { room: Room }
@@ -32,9 +34,10 @@ class MessageBox extends React.Component
       <div>
         <div>{ this.props.room.name }</div>
         <ul>
-          { this.props.room.timeline.map(msg => (
-            <li key={ msg.getId() }>{msg.getSender()}: { msg.event.content.body }</li>
-          ))
+          { this.props.room.timeline.map(msg => {
+            debug(msg)
+            return <li key={ msg.getId() }>{msg.getSender()}: { msg.event.content.body }</li>
+          })
           }
         </ul>
       </div>);
