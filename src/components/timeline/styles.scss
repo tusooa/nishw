@@ -1,0 +1,24 @@
+@import '../../colors';
+
+.timeline {
+  &__message {
+    border-bottom: 1px solid $color3;
+  }
+  &__sender {
+    min-width: 20%;
+    &_name {
+      color: $color4;
+      &_me {
+        color: $color2;
+      }
+    }
+  }
+  &__content {
+    margin-left: 2%;
+    display: inline-block;
+  }
+  &__status {
+    display: inline-block;
+    color: $color1;
+  }
+}

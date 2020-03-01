@@ -14,8 +14,10 @@
  *  You should have received a copy of the GNU General Public License
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 import React from 'react'
 import './styles.scss'
+import Timeline from '../timeline'
 
 const debug = console.log
 
@@ -33,6 +35,8 @@ class MessageBox extends React.Component
     this.onChange = this.onChange.bind(this)
     this.sendOnEnter = this.sendOnEnter.bind(this)
     this.sendMessage = this.sendMessage.bind(this)
+
+    this.timeline = React.createRef()
   }
 
   onChange(e)
@@ -63,6 +67,8 @@ class MessageBox extends React.Component
                      'm.room.message',
                      content)
     this.setState({ messageToSend: '' })
+
+    this.timeline.current.notifyUpdate()
   }
 
   render()
@@ -75,31 +81,10 @@ class MessageBox extends React.Component
       <div className='messagebox'>
         <div>{ room.name }</div>
         <div className='messagebox__timeline'>
-          { room.timeline.map(msg => {
-            debug(msg)
-            const sender = msg.getSender()
-            const isMe = sender === matrix.getUserId()
-            
-            return <div className='messagebox__message'
-                       key={ msg.getId() }>
-                     <div className='messagebox__sender'>
-                       <span className=
-                               { 'messagebox__sender_name'
-                                 + (isMe
-                                    ? ' messagebox__sender_name_me'
-                                    : '')}>
-                         { sender }
-                       </span>:
-                     </div>
-                     <div className='messagebox__content'>
-                       { msg.event.content.body }
-                     </div>
-                     <div className='messagebox__status'>
-                       { msg.isSending() ? '[sending]' : '' }
-                     </div>
-                   </div>
-          })
-          }
+          <Timeline ref={ this.timeline }
+                    matrix={ matrix }
+                    timelineSet={ room.getUnfilteredTimelineSet() }
+                    room={ room } />
         </div>
         <div>
           <input type='text'

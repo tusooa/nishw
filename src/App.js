@@ -57,6 +57,7 @@ class App extends React.Component
       userId: this.state.userId,
       deviceId: this.state.deviceId,
       sessionStore: new sdk.WebStorageSessionStore(window.localStorage),
+      cryptoStore: new sdk.MemoryCryptoStore(),
     })
 
     this.matrix.initCrypto()
@@ -64,7 +65,10 @@ class App extends React.Component
 
   async startMatrix()
   {
-    await this.matrix.startClient({initialSyncLimit: 10})
+    await this.matrix.startClient({
+      initialSyncLimit: 10,
+      pendingEventOrdering: 'detached',
+    })
   }
   
   /**

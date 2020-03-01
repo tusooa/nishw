@@ -18,6 +18,7 @@ import React from 'react'
 
 import RoomList from '../roomlist'
 import MessageBox from '../messagebox'
+import ClaimKeys from '../claimkeys'
 import './styles.css'
 
 class MainPage extends React.Component
@@ -32,24 +33,12 @@ class MainPage extends React.Component
     console.log(props)
     this.state = {
       rooms: [],
-      timeline: [],
       currentRoom: null,
       message: '',
     }
 
     this.matrix = props.matrix
 
-    this.matrix.on("Room.timeline",
-                   (event, room, toStartOfTimeline) => {
-                     if (event.getType() !== "m.room.message") {
-                       return // only use messages
-                     }
-                     const timeline = this.state.timeline
-                     timeline.push(event)
-                     this.setState({ timeline })
-                     console.log(event)
-                     console.log(event.event.content.body)
-                   })
     this.matrix.on('sync', (state) => {
       switch (state) {
       case 'ERROR':
@@ -84,6 +73,7 @@ class MainPage extends React.Component
       <div>
         <div className='header'>
           <button onClick={ this.props.logoutCallback }>Log out</button>
+          <ClaimKeys matrix={ this.matrix } />
         </div>
         <div className='mainpage__content'>
           <div className='left'>
@@ -92,8 +82,11 @@ class MainPage extends React.Component
                       switchRoomCallback={ this.switchRoom } />
           </div>
           <div className='right'>
-            <MessageBox room={ this.state.currentRoom }
-                        matrix={ this.matrix }/>
+            { this.state.currentRoom &&
+              <MessageBox key={ this.state.currentRoom.roomId }
+                          room={ this.state.currentRoom }
+                          matrix={ this.matrix }/>
+            }
           </div>
         </div>
         <div className='footer'>
