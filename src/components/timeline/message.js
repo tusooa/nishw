@@ -42,7 +42,7 @@ const contentHandlers = {
       i18n('%{user} sent an image named "%{filename}":',
            { filename:
              <a href={ch.get().mxcUrlToHttp(content.url)}
-                target='_blank'>
+                target='_blank' rel="noopener noreferrer">
                { content.body }
              </a>}),
       body:
@@ -55,7 +55,7 @@ const contentHandlers = {
     i18n('%{user} sent a file named "%{filename}".',
          { filename:
            <a href={ch.get().mxcUrlToHttp(content.url)}
-              target='_blank'>
+              target='_blank' rel="noopener noreferrer">
              { content.body }
            </a>}),
   }),
