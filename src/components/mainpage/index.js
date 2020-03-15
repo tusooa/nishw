@@ -20,11 +20,12 @@ import RoomList from '../roomlist'
 import MessageBox from '../messagebox'
 import ClaimKeys from '../claimkeys'
 import './styles.css'
+import ch from '../../helpers/client'
 
 class MainPage extends React.Component
 {
   /**
-   * <MainPage matrix=... logoutCallback=func />
+   * <MainPage logoutCallback=func />
    */
   constructor(props)
   {
@@ -37,9 +38,7 @@ class MainPage extends React.Component
       message: '',
     }
 
-    this.matrix = props.matrix
-
-    this.matrix.on('sync', (state) => {
+    ch.get().on('sync', (state) => {
       switch (state) {
       case 'ERROR':
         this.setState({ message: 'Connection to the server has been lost.' })
@@ -48,7 +47,7 @@ class MainPage extends React.Component
         this.setState({ message: '' })
         break
       case "PREPARED":
-        this.setState({ message: '', rooms: this.matrix.getRooms() })
+        this.setState({ message: '', rooms: ch.get().getRooms() })
         break
       }
     })
@@ -66,14 +65,14 @@ class MainPage extends React.Component
   {
     this.setState({ currentRoom: room })
   }
-  
+
   render()
   {
     return (
       <div>
         <div className='header'>
           <button onClick={ this.props.logoutCallback }>Log out</button>
-          <ClaimKeys matrix={ this.matrix } />
+          <ClaimKeys />
         </div>
         <div className='mainpage__content'>
           <div className='left'>
@@ -84,8 +83,7 @@ class MainPage extends React.Component
           <div className='right'>
             { this.state.currentRoom &&
               <MessageBox key={ this.state.currentRoom.roomId }
-                          room={ this.state.currentRoom }
-                          matrix={ this.matrix }/>
+                          room={ this.state.currentRoom } />
             }
           </div>
         </div>

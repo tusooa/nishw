@@ -18,14 +18,14 @@
 import React from 'react'
 import sdk from 'matrix-js-sdk'
 import './styles.scss'
+import ch from '../../helpers/client'
 
 const debug = console.log
 
 
 class Timeline extends React.Component
 {
-  /// @param props: {matrix: MatrixClient,
-  ///                room: Room,
+  /// @param props: {room: Room,
   ///                timelineSet: timelineSet}
   constructor(props)
   {
@@ -33,7 +33,7 @@ class Timeline extends React.Component
     this.state = { timeline: [] }
 
     this.timelineWindow = new sdk.TimelineWindow(
-      this.props.matrix, this.props.timelineSet)
+      ch.get(), this.props.timelineSet)
 
     this.reloadEvents = this.reloadEvents.bind(this)
     this.onRoomTimeline = this.onRoomTimeline.bind(this)
@@ -49,7 +49,7 @@ class Timeline extends React.Component
   componentDidMount()
   {
     this.mounted = true
-    this.props.matrix.on('Room.timeline', this.onRoomTimeline)
+    ch.get().on('Room.timeline', this.onRoomTimeline)
     this.timelineWindow.load()
     this.reloadEvents()
   }
@@ -57,7 +57,7 @@ class Timeline extends React.Component
   componentWillUnmount()
   {
     this.mounted = false
-    this.props.matrix.removeListener('Room.timeline', this.onRoomTimeline)
+    ch.get().removeListener('Room.timeline', this.onRoomTimeline)
   }
 
   onRoomTimeline(event, room)
@@ -116,7 +116,7 @@ class Timeline extends React.Component
   render()
   {
     const { timeline } = this.state
-    const { matrix } = this.props
+    const matrix = ch.get()
 
     return (
       <div>

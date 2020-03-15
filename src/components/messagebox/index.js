@@ -18,12 +18,13 @@
 import React from 'react'
 import './styles.scss'
 import Timeline from '../timeline'
+import ch from '../../helpers/client'
 
 const debug = console.log
 
 class MessageBox extends React.Component
 {
-  /// @param: props: { room: Room, matrix: MatrixClient }
+  /// @param: props: { room: Room }
   constructor(props)
   {
     super(props)
@@ -31,7 +32,7 @@ class MessageBox extends React.Component
     this.state = {
       messageToSend: '',
     }
-    
+
     this.onChange = this.onChange.bind(this)
     this.sendOnEnter = this.sendOnEnter.bind(this)
     this.sendMessage = this.sendMessage.bind(this)
@@ -56,16 +57,10 @@ class MessageBox extends React.Component
 
   sendMessage()
   {
-    const { matrix, room } = this.props
+    const { room } = this.props
+    const matrix = ch.get()
 
-    const content = {
-      body: this.state.messageToSend,
-      msgtype: 'm.text',
-    }
-
-    matrix.sendEvent(room.roomId,
-                     'm.room.message',
-                     content)
+    matrix.sendTextMessage(room.roomId, this.state.messageToSend)
     this.setState({ messageToSend: '' })
 
     this.timeline.current.notifyUpdate()
@@ -73,16 +68,16 @@ class MessageBox extends React.Component
 
   render()
   {
-    const { matrix, room } = this.props
-    
+    const { room } = this.props
+    const matrix = ch.get()
+
     if (!room) { return [] }
-    
+
     return (
       <div className='messagebox'>
         <div>{ room.name }</div>
         <div className='messagebox__timeline'>
           <Timeline ref={ this.timeline }
-                    matrix={ matrix }
                     timelineSet={ room.getUnfilteredTimelineSet() }
                     room={ room } />
         </div>

@@ -15,6 +15,7 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 import React from 'react'
+import ch from '../../helpers/client'
 
 class ClaimKeys extends React.Component
 {
@@ -39,7 +40,7 @@ class ClaimKeys extends React.Component
 
   claimKeys()
   {
-    const { matrix } = this.props
+    const matrix = ch.get()
     matrix.getKeyBackupVersion()
       .then(backupInfo =>
             matrix.restoreKeyBackupWithPassword(
@@ -50,7 +51,7 @@ class ClaimKeys extends React.Component
 
   render()
   {
-    const { matrix } = this.props
+    const matrix = ch.get()
 
     return (
       <div>

@@ -21,6 +21,7 @@ import config from './config.json'
 import Login from './components/login'
 import MainPage from './components/mainpage'
 import { withCookies } from 'react-cookie'
+import ch from './helpers/client'
 global.Olm = require('olm/olm_legacy') // FIXME
 const sdk = require('matrix-js-sdk')
 
@@ -39,7 +40,7 @@ class App extends React.Component
     this.state.loggedIn = !!this.state.accessToken
 
     if (! this.state.loggedIn) {
-      this.matrix = null
+      ch.set(null)
     } else {
       this.initMatrix()
       this.startMatrix()
@@ -51,22 +52,22 @@ class App extends React.Component
 
   initMatrix()
   {
-    this.matrix = sdk.createClient({
+    ch.set(sdk.createClient({
       baseUrl: this.state.homeserver,
       accessToken: this.state.accessToken,
       userId: this.state.userId,
       deviceId: this.state.deviceId,
       sessionStore: new sdk.WebStorageSessionStore(window.localStorage),
       cryptoStore: new sdk.MemoryCryptoStore(),
-    })
+    }))
 
-    this.initCryptoPromise = this.matrix.initCrypto()
+    this.initCryptoPromise = ch.get().initCrypto()
   }
 
   async startMatrix()
   {
     await this.initCryptoPromise
-    await this.matrix.startClient({
+    await ch.get().startClient({
       initialSyncLimit: 10,
       pendingEventOrdering: 'detached',
     })
@@ -131,7 +132,8 @@ class App extends React.Component
     ;['userId', 'homeserver', 'accessToken', 'deviceId']
       .map( n => this.props.cookies.remove(n))
 
-    this.matrix = null
+    // in case other components want to remove listeners
+    setTimeout(ch.set(null))
   }
 
   render()
@@ -147,7 +149,7 @@ class App extends React.Component
               </div>
             </div>
           ) : (
-            <MainPage matrix={this.matrix} logoutCallback={this.logOut} />
+            <MainPage logoutCallback={this.logOut} />
           )
         }
       </div>
