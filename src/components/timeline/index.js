@@ -19,6 +19,7 @@ import React from 'react'
 import sdk from 'matrix-js-sdk'
 import './styles.scss'
 import ch from '../../helpers/client'
+import Message from './message'
 
 const debug = console.log
 
@@ -124,31 +125,7 @@ class Timeline extends React.Component
           onClick={ () => this.paginateBack().then(this.reloadEvents) }>
           Back
         </button>
-        { timeline.map(msg => {
-          const sender = msg.getSender()
-          const isMe = sender === matrix.getUserId()
-
-          return (
-            <div className='timeline__message'
-                 key={ msg.getId() }>
-              <div className='timeline__sender'>
-                <span className={ 'timeline__sender_name'
-                                  + (isMe
-                                     ? ' timeline__sender_name_me'
-                                     : '')}>
-                  { sender }
-                </span>:
-              </div>
-              <div className='timeline__content'>
-                { msg.getContent().body }
-              </div>
-              <div className='timeline__status'>
-                { msg.isSending() ? '[sending]' : '' }
-              </div>
-            </div>
-          )
-        })
-        }
+        { timeline.map(msg => <Message key={msg.getId()} msg={msg} />) }
       </div>
     )
   }
