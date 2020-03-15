@@ -31,7 +31,7 @@ class Timeline extends React.Component
   {
     super(props)
     this.state = { timeline: [] }
-    
+
     this.timelineWindow = new sdk.TimelineWindow(
       this.props.matrix, this.props.timelineSet)
 
@@ -75,9 +75,9 @@ class Timeline extends React.Component
 
   paginateBack()
   {
-    return this.paginate(sdk.EventTimeline.BACKWARDS)    
+    return this.paginate(sdk.EventTimeline.BACKWARDS)
   }
-  
+
   paginateForward()
   {
     return this.paginate(sdk.EventTimeline.FORWARDS)
@@ -87,7 +87,7 @@ class Timeline extends React.Component
   {
     return this.timelineWindow.paginate(direction, 10)
   }
-  
+
   reloadEvents()
   {
     debug('reloading events')
@@ -97,6 +97,7 @@ class Timeline extends React.Component
           this.timelineWindow.canPaginate(sdk.EventTimeline.FORWARDS)
           ? events
           : events.concat(this.props.timelineSet.getPendingEvents())
+    debug('Timeline now:', timeline)
 
     this.setState({ timeline })
   }
@@ -111,12 +112,12 @@ class Timeline extends React.Component
   {
     this.updateTimeline()
   }
-  
+
   render()
   {
     const { timeline } = this.state
     const { matrix } = this.props
-    
+
     return (
       <div>
         <button
@@ -126,7 +127,7 @@ class Timeline extends React.Component
         { timeline.map(msg => {
           const sender = msg.getSender()
           const isMe = sender === matrix.getUserId()
-          
+
           return (
             <div className='timeline__message'
                  key={ msg.getId() }>
@@ -139,7 +140,7 @@ class Timeline extends React.Component
                 </span>:
               </div>
               <div className='timeline__content'>
-                { msg.event.content.body }
+                { msg.getContent().body }
               </div>
               <div className='timeline__status'>
                 { msg.isSending() ? '[sending]' : '' }

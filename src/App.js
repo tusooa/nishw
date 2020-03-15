@@ -44,7 +44,7 @@ class App extends React.Component
       this.initMatrix()
       this.startMatrix()
     }
-    
+
     this.logIn = this.logIn.bind(this)
     this.logOut = this.logOut.bind(this)
   }
@@ -60,17 +60,18 @@ class App extends React.Component
       cryptoStore: new sdk.MemoryCryptoStore(),
     })
 
-    this.matrix.initCrypto()
+    this.initCryptoPromise = this.matrix.initCrypto()
   }
 
   async startMatrix()
   {
+    await this.initCryptoPromise
     await this.matrix.startClient({
       initialSyncLimit: 10,
       pendingEventOrdering: 'detached',
     })
   }
-  
+
   /**
    * logIn({ username, password, homeserver })
    */
@@ -132,7 +133,7 @@ class App extends React.Component
 
     this.matrix = null
   }
-  
+
   render()
   {
     return (
