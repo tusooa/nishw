@@ -17,6 +17,10 @@
 @import '../../colors';
 
 .nw-timeline {
+  &--scrollview {
+    overflow-y: scroll;
+    max-height: 80vh;
+  }
   &-message {
     border-bottom: 1px solid $color3;
     &--sender {

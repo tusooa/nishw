@@ -17,7 +17,20 @@
 
 @import '../../colors';
 
-.messagebox {
-  &__timeline {
+.nw-messagebox {
+  height: 88vh;
+  &--inputline {
+    height: 7vh;
+  }
+  &--input {
+    display: block;
+    float: left;
+    width: 89%;
+    height: 95%;
+  }
+  &--sendbutton {
+    display: block;
+    width: 9%;
+    height: 100%;
   }
 }

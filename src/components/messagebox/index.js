@@ -19,6 +19,7 @@ import React from 'react'
 import './styles.scss'
 import Timeline from '../timeline'
 import ch from '../../helpers/client'
+import { i18n } from '../../helpers/i18n'
 
 const debug = console.log
 
@@ -74,20 +75,23 @@ class MessageBox extends React.Component
     if (!room) { return [] }
 
     return (
-      <div className='messagebox'>
+      <div className='nw-messagebox'>
         <div>{ room.name }</div>
-        <div className='messagebox__timeline'>
-          <Timeline ref={ this.timeline }
-                    timelineSet={ room.getUnfilteredTimelineSet() }
-                    room={ room } />
-        </div>
-        <div>
-          <input type='text'
+        <Timeline ref={ this.timeline }
+                  timelineSet={ room.getUnfilteredTimelineSet() }
+                  room={ room } />
+
+        <div className='nw-messagebox--inputline'>
+          <textarea className='nw-messagebox--input'
+                 type='text'
                  name='messageToSend'
                  onChange={ this.onChange }
                  onKeyUp={ this.sendOnEnter }
                  value={ this.state.messageToSend } />
-          <button onClick={ this.sendMessage }>Send</button>
+          <button onClick={ this.sendMessage }
+                  className='nw-messagebox--sendbutton'>
+            { i18n('Send') }
+          </button>
         </div>
       </div>);
   }

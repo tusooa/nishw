@@ -120,12 +120,14 @@ class Timeline extends React.Component
     const matrix = ch.get()
 
     return (
-      <div>
+      <div className='nw-timeline'>
         <button
           onClick={ () => this.paginateBack().then(this.reloadEvents) }>
           { i18n('Back') }
         </button>
-        { timeline.map(msg => <Message key={msg.getId()} msg={msg} />) }
+        <div className='nw-timeline--scrollview'>
+          { timeline.map(msg => <Message key={msg.getId()} msg={msg} />) }
+        </div>
       </div>
     )
   }
