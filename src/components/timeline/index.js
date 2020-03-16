@@ -20,7 +20,7 @@ import sdk from 'matrix-js-sdk'
 import './styles.scss'
 import ch from '../../helpers/client'
 import Message from './message'
-
+import { i18n } from '../../helpers/i18n'
 const debug = console.log
 
 
@@ -123,7 +123,7 @@ class Timeline extends React.Component
       <div>
         <button
           onClick={ () => this.paginateBack().then(this.reloadEvents) }>
-          Back
+          { i18n('Back') }
         </button>
         { timeline.map(msg => <Message key={msg.getId()} msg={msg} />) }
       </div>

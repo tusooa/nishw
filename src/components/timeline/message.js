@@ -147,14 +147,14 @@ class Message extends React.Component
     return (
       <div className='nw-timeline-message'>
         <div className='nw-timeline-message--sender'>
+          { msg.isEncrypted() &&
+            <div className='nw-timeline-message--status'>
+              { i18n('🔒', {}, format.FINAL) }
+            </div> }
           { action
             ? <Action>{ format(action, { user }, format.FINAL) }</Action>
             // Followed by a message a user sent, e.g. tusooa: This is a message
             : i18n('%{user}:', { user }, format.FINAL) }
-          { msg.isEncrypted() &&
-            <div className='nw-timeline-message--status'>
-              { i18n('[encrypted]', {}, format.FINAL) }
-            </div> }
         </div>
         <div className='nw-timeline-message--event'>
           { body }

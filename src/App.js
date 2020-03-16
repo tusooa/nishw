@@ -22,6 +22,8 @@ import Login from './components/login'
 import MainPage from './components/mainpage'
 import { withCookies } from 'react-cookie'
 import ch from './helpers/client'
+import { i18n } from './helpers/i18n'
+
 global.Olm = require('olm/olm_legacy') // FIXME
 const sdk = require('matrix-js-sdk')
 
@@ -92,7 +94,8 @@ class App extends React.Component
                           user: username,
                         },
                         password,
-                        initial_device_display_name: 'nishw',
+                        initial_device_display_name:
+                        i18n('nishw at %{url}', { url: document.URL }),
                       })
       .then((res) => {
         this.props.cookies.set('accessToken', res.access_token)
