@@ -1,0 +1,35 @@
+@import '../../colors';
+
+.nw-sidemenu {
+  font-size: 2em;
+  background-color: $color3;
+  position: absolute;
+  &--left {
+    float: left;
+    left: 0;
+    text-align: left;
+    border-right: $color4 solid 1px;
+  }
+  &--right {
+    right: 0;
+    text-align: right;
+    border-left: $color4 solid 1px;
+  }
+  &-on {
+    min-width: 30%;
+    min-height: 98vh;
+  }
+  &-off {
+    min-width: 0;
+  }
+  &--toggle {
+    color: $color4;
+  }
+  &--item {
+    color: $color4;
+    &:hover {
+      color: $color3;
+      background-color: $color4;
+    }
+  }
+}

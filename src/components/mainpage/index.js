@@ -19,8 +19,12 @@ import React from 'react'
 import RoomList from '../roomlist'
 import MessageBox from '../messagebox'
 import ClaimKeys from '../claimkeys'
+import Menu from '../sidemenu'
 import './styles.css'
 import ch from '../../helpers/client'
+import { i18n } from '../../helpers/i18n'
+
+const debug = console.log
 
 class MainPage extends React.Component
 {
@@ -71,9 +75,16 @@ class MainPage extends React.Component
     return (
       <div>
         <div className='header'>
-          <button onClick={ this.props.logoutCallback }>Log out</button>
           <ClaimKeys />
         </div>
+        <Menu position='right' title={ i18n('Menu') }>
+          <Menu.Item onClick={ () => { debug('You just clicked settings!') }}>
+            { i18n('Settings')}
+          </Menu.Item>
+          <Menu.Item onClick={ this.props.logoutCallback }>
+            { i18n('Log out') }
+          </Menu.Item>
+        </Menu>
         <div className='mainpage__content'>
           <div className='left'>
             <RoomList rooms={ this.state.rooms }
