@@ -77,6 +77,32 @@ const eventHandlers = {
   }),
 
   'm.room.create': msg => ({ action: i18n('%{user} created the room.') }),
+  'm.room.member': msg => {
+    let action
+    switch (msg.getContent().membership) {
+    case 'join':
+      action = i18n('%{user} joined the room.')
+      break;
+
+    case 'invite':
+      action = i18n('%{user} invited %{invitedPerson} to join the room.',
+                    { invitedPerson: msg.getStateKey() })
+    }
+    return { action }
+  },
+  'm.room.power_levels': msg => ({
+    action: i18n('%{user} set the power levels of the room.')
+  }),
+  'm.room.join_rules': msg => ({
+    action: i18n('%{user} set the join rules of this room to "%{joinRule}".',
+                 { joinRule: msg.getContent().join_rule })
+  }),
+  'm.room.history_visibility': msg => ({
+    action: i18n('%{user} set the history visibility of this room to "%{visibility}".', { visibility: msg.getContent().history_visibility })
+  }),
+  'm.room.guest_access': msg => ({
+    action: i18n('%{user} set the guest access rule of this room to "%{guestAccess}".', { guestAccess: msg.getContent().guest_access })
+  })
 }
 
 const handleEvent = msg => {
