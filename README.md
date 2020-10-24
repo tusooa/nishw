@@ -1,3 +1,12 @@
+
+The nishw project is discontinued and archived here.
+
+However, I am also planning another matrix client that uses an SDK
+I am developing myself. It may be released in the future, at my GitLab:
+
+https://gitlab.com/tusooa
+
+--------------------------------------------------------------------
 Copyright (C) 2020 Tusooa Zhu
 
 This program is free software: you can redistribute it and/or modify
